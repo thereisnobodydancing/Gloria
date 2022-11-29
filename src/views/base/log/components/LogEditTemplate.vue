@@ -65,13 +65,14 @@
               v-for="(item, index) in userList.options"
               :key="index"
               class="w-11 text-center mr-5 mb-4 space-y-2 cursor-pointer"
-              :class="{'hover:opacity-75': $route.query.type === 'create'}"
-              @click="removeUser(index)"
+              :class="{'hover:opacity-80': $route.query.type === 'create'}"
+              @click="showCard(item.id)"
             >
               <div class="w-11 h-11 rounded relative">
                 <div 
                   v-show="$route.query.type === 'create'"
-                  class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gray-400"
+                  class="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-gray-400 hover:bg-gray-600"
+                  @click.stop="removeUser(index)"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
                     <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
@@ -106,6 +107,8 @@
   </div>
   <!-- 选择审批周报人员 -->
   <add-user-modal ref="addUserRef" @confirm="addUser" />
+  <!-- 名片 -->
+  <business-card-modal ref="cardRef" />
 </template>
 
 <script setup>
@@ -244,5 +247,11 @@ const editLog = function() {
     }
     setTimeout(() => btnDisabled.value = false, 200)
   })
+}
+
+/******** 名片 ********/
+const cardRef = ref()
+const showCard = function(id) {
+  cardRef.value.showCard(id)
 }
 </script>

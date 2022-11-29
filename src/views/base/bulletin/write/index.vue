@@ -28,7 +28,7 @@
         <!-- 2-content -->
         <div class="border-b py-4">
           <div class="w-60 mb-2">
-            <n-select 
+            <n-select
               v-model:value="data.type" 
               :options="typeList" 
               label-field="name" 

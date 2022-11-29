@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
-import { watch } from 'vue'
+// import { watch } from 'vue'
 const user = JSON.parse(sessionStorage.getItem('user'))
 
 export default defineStore('template', () => {
   const userId = ref(user.id)
   // 日志类型列表
   const logTypeList = ref([
-    { label: '日报', value: 1 },
-    { label: '周报', value: 2 },
-    { label: '月报', value: 3 },
-    { label: '年报', value: 4 },
+    { label: '工作日报', value: 1 },
+    { label: '工作周报', value: 2 },
+    { label: '工作月报', value: 3 },
+    { label: '年终总结', value: 4 },
   ])
   // 日志数据
   const logData = ref({

@@ -18,7 +18,7 @@
           :default-value="logData.logType" 
           :options="logTypeList" 
           :disabled="$route.query.type === 'edit'"
-          placeholder="筛选：请选择日志种类" 
+          placeholder="筛选：请选择日志种类"
           @update:value="handleUpdate"
         />
       </div>
@@ -44,7 +44,6 @@ const handleUpdate = (value, option) => {
     logData.value.picturePathList = logData.value.filePathList = []
   }
 }
-
 // 编辑模式获取数据
 if(route.query.type === 'edit') {
   // 获取日志数据

@@ -183,7 +183,6 @@ const showModal = function(options=[], keys=[], ids=[], wList=[]) {
 const handleChedkedKeysChange = function(keys, option) {
   modal.btnDisabled = props.max ? option.length > props.max : option.length === 0
   select.options = option
-  
   // select.keys = option.map(item => { if(item.type === 'user') return item.key })
   // select.ids = option.map(item => { if(item.type === 'user') return item.id })
   select.keys = option.map(item => item.key)
