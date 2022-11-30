@@ -1,6 +1,9 @@
 <!-- 查看数据 -->
 <template>
-  <div :style="{height: `${clientHeight - 220}px`}">
+  <div 
+    class="py-3 pl-3 pr-2"
+    :style="{height: `${clientHeight - 230}px`}"
+  >
     <base-pagination
       ref="paginationRef"
       url="/process/getMySubmit"
@@ -10,12 +13,13 @@
       <template #default="slotProps">
         <div 
           class="overflow-y-scroll reactive" 
-          :style="{height: `${clientHeight - 220}px`}"
+          :style="{height: `${clientHeight - 230}px`}"
         >
-          <n-table :bordered="false" class="p-6">
+          <n-table :bordered="false">
             <thead class="sticky top-0">
               <tr>
                 <th v-for="(item, index) in JSON.parse(slotProps.list[0].form)" :key="index">{{ item.options.name }}</th>
+                <th>审批状态</th>
               </tr>
             </thead>
             <tbody>
@@ -39,6 +43,7 @@
                     </div>
                   </td>
                 </template>
+                <td>{{ item.approvalsResult }}</td>
               </tr>
             </tbody>
           </n-table>

@@ -21,170 +21,74 @@
           :path="item.options.id"
           :label="`${item.options.name}：`"
         >
-          <!-- {{ item }} -->
           <!-- 单行输入文本 -->
           <template v-if="item.type === 'input'">
-            <div
-              :class="{
-                'w-1/3': item.options.width === '1/3',
-                'w-2/3': item.options.width === '2/3',
-                'w-full': item.options.width === '3/3'
-              }"
-            >
-              <n-input 
-                v-model:value="form[item.options.id]" 
-                type="text" 
-                :showCount="item.options.showCount ? true : false"
-                :maxlength="item.options.maxLength"
-                :placeholder="item.options.placeholder" 
-                clearable 
-              />
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <input-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 多行输入文本 -->
           <template v-if="item.type === 'textarea'">
-            <div
-              :class="{
-                'w-1/3': item.options.width === '1/3',
-                'w-2/3': item.options.width === '2/3',
-                'w-full': item.options.width === '3/3'
-              }"
-            >
-              <n-input 
-                v-model:value="form[item.options.id]" 
-                type="textarea" 
-                :showCount="item.options.showCount ? true : false"
-                :maxlength="item.options.maxLength"
-                :placeholder="item.options.placeholder" 
-                :autosize="{minRows: 3}" 
-                clearable 
-              />
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <input-textarea-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 数字输入文本 -->
           <template v-if="item.type === 'inputNumber'">
-            <div
-              :class="{
-                'w-1/3': item.options.width === '1/3',
-                'w-2/3': item.options.width === '2/3',
-                'w-full': item.options.width === '3/3'
-              }"
-            >
-              <n-input-number
-                v-model:value="form[item.options.id]" 
-                :placeholder="item.options.placeholder" 
-                :min="item.options.useMin ? item.options.min : undefined"
-                :max="item.options.useMax ? item.options.max : undefined"
-                clearable
-              />
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <input-number-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 选择器 -->
           <template v-if="item.type === 'select'">
-            <div
-              :class="{
-                'w-1/3': item.options.width === '1/3',
-                'w-2/3': item.options.width === '2/3',
-                'w-full': item.options.width === '3/3'
-              }"
-            >
-              <n-select 
-                v-model:value="form[item.options.id]" 
-                :options="item.options.list" 
-                :placeholder="item.options.placeholder"
-                :multiple="item.options.multiple"
-                clearable
-              />
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <select-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 单选框 -->
           <template v-if="item.type === 'radio'">
-            <div
-              :class="{
-                'w-1/3': item.options.width === '1/3',
-                'w-2/3': item.options.width === '2/3',
-                'w-full': item.options.width === '3/3'
-              }"
-            >
-              <n-radio-group v-model:value="form[item.options.id]" name="radiogroup" class="leading-8">
-                <n-space>
-                  <n-radio 
-                    v-for="item in item.options.list" 
-                    :key="item.value" 
-                    :value="item.value"
-                  >
-                    {{ item.label }}
-                  </n-radio>
-                </n-space>
-              </n-radio-group>
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <radio-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 多选框 -->
           <template v-if="item.type === 'checkbox'">
-            <div
-              :class="{
-                'w-1/3': item.options.width === '1/3',
-                'w-2/3': item.options.width === '2/3',
-                'w-full': item.options.width === '3/3'
-              }"
-            >
-              <n-checkbox-group v-model:value="form[item.options.id]">
-                <n-space item-style="display: flex">
-                  <n-checkbox 
-                    v-for="i in item.options.list" 
-                    :key="i.value" 
-                    :value="i.value"
-                  >
-                    {{ i.label }}
-                  </n-checkbox>
-                </n-space>
-              </n-checkbox-group>
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <checkbox-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 选择日期 -->
           <template v-if="item.type === 'datePicker'">
-            <div>
-              {{ item.options.type }}
-              <n-date-picker
-                v-model:formatted-value="form[item.options.id]"
-                :type="item.options.type" 
-                :format="dateFeature[item.options.type]"
-                :start-placeholder="datePlaceholder[item.options.type] ? datePlaceholder[item.options.type].start : null" 
-                :end-placeholder="datePlaceholder[item.options.type] ? datePlaceholder[item.options.type].end : null"
-                clearable
-              />
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <date-picker-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
 
           <!-- 上传 -->
           <template v-if="item.type === 'upload'">
-            <div class="w-full">
-              <base-upload 
-                :action="item.options.type === 'text' ? `${baseUrl}/process/uploadFile` : `${baseUrl}/process/uploadPicture`"
-                :file-list="form[item.options.id]"
-                :type="item.options.type"
-                
-                @change="(list) => form[item.options.id] = list" 
-              >
-                <template v-if="item.options.type === 'text'">
-                  <n-button>上传文件</n-button>
-                </template>
-              </base-upload>
-              <p v-if="item.options.desc"  class="mt-1 text-xs text-gray-400">{{ item.options.desc }}</p>
-            </div>
+            <upload-component :options="item.options" @change="(list) => form[item.options.id] = list" />
+          </template>
+
+          <!-- 手机号 -->
+          <template v-if="item.type === 'inputPhone'">
+            <input-phone-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+          </template>
+
+          <!-- 身份证号 -->
+          <template v-if="item.type === 'inputId'">
+            <input-id-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+          </template>
+
+          <!-- 金额 -->
+          <template v-if="item.type === 'inputPrice'">
+            <input-price-component 
+              :options="item.options" 
+              @change="(currency, price) => {
+                form[item.options.id].currency = currency
+                form[item.options.id].price = price
+            }" />
+          </template>
+
+          <!-- 选择职位 -->
+          <template v-if="item.type === 'selectPost'">
+            <select-post-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+          </template>
+
+          <!-- 选择部门 -->
+          <template v-if="item.type === 'selectSector'">
+            <select-sector-component :options="item.options" @change="(value) => form[item.options.id] = value" />
           </template>
         </n-form-item>
       </n-form>
@@ -288,7 +192,6 @@ import { useMessage } from 'naive-ui'
 const route = useRoute()
 const emit = defineEmits(['submit'])
 const message = useMessage()
-const baseUrl = import.meta.env.VITE_APP_URL
 const clientHeight = ref(document.documentElement.clientHeight)
 const showLoading = ref(true)
 
@@ -314,25 +217,6 @@ const formRef = ref()
 const formList = ref([])
 const form = ref({})
 const rules = ref({})
-const datePlaceholder = {
-  daterange: { start: '开始日期', end: '结束日期' },
-  datetimerange: { start: '开始日期时间', end: '结束日期时间' },
-  monthrange: { start: '开始月份', end: '结束月份' },
-  yearrange: { start: '开始年份', end: '结束年份' },
-  quarterrange: { start: '开始季度', end: '结束季度' },
-}
-const dateFeature = {
-  date: 'yyyy-MM-dd',
-  datetime: 'yyyy-MM-dd HH:mm:ss',
-  daterange: 'yyyy-MM-dd',
-  datetimerange: 'yyyy-MM-dd HH:mm:ss',
-  month: 'yyyy-MM',
-  monthrange: 'yyyy-MM',
-  year: 'yyyy',
-  yearrange: 'yyyy',
-  quarter: 'yyyy-第Q季',
-  quarterrange: 'yyyy-第Q季'
-}
 
 /*******  流程相关  ******/
 const addUserRef = ref()
@@ -358,7 +242,26 @@ const removeUser = (index, userIndex) => {
   userData.approvalsKeyList.splice(userIndex, 1)
   userData.approvalsIdList.splice(userIndex, 1)
 }
-
+// 校验手机号
+const checkMobile = (rule, value) => {
+  if(value.length > 0) {
+    if(!/^1[3456789]\d{9}$/.test(value)) return new Error("手机号格式不正确")
+    if(/^1[3456789]\d{9}$/.test(value)) return true
+  }
+}
+// 校验身份证号
+const checkId = (rule, value) => {
+  if(value.length > 0) {
+    if(!/^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/.test(value)) return new Error("身份证号格式不正确")
+    if(/^[1-9]\d{5}(18|19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/.test(value)) return true
+  }
+}
+// 校验金额
+const checkPrice = (rule, obj) => {
+  if(!obj.currency) return new Error("没有选择货币类型")
+  if(!obj.price) return new Error("没有输入金额")
+  return true
+}
 // 获取数据
 const getData = (id) => {
   showLoading.value = true
@@ -369,13 +272,8 @@ const getData = (id) => {
       if(res.data.data.form) {
         formList.value = JSON.parse(res.data.data.form)
         JSON.parse(res.data.data.form).forEach((item, index) => {
-          // 单行输入、多行输入、手机号、身份证号
-          if(['textarea', 'input', 'inputPhone', 'inputId'].includes(item.type)) {
-            form.value[item.options.id] = ''
-            if(item.options.required) rules.value[item.options.id] = [{required: true, message: `${item.options.name}不能为空`}]
-          }
-          // 数字输入、选择器、单选组、多选组
-          if(['inputNumber', 'select', 'radio', 'checkbox'].includes(item.type)) {
+          // 单行输入、多行输入、数字输入、选择器、单选组、多选组、选择职位、选择部门
+          if(['inputNumber', 'select', 'radio', 'checkbox','textarea', 'input', 'selectPost', 'selectSector'].includes(item.type)) {
             form.value[item.options.id] = null
             if(item.options.required) rules.value[item.options.id] = [{required: true, message: `${item.options.name}不能为空`}]
           }
@@ -393,6 +291,23 @@ const getData = (id) => {
           if(['upload'].includes(item.type)) {
             form.value[item.options.id] = []
             if(item.options.required) rules.value[item.options.id] = [{required: true, type: 'array', message: `${item.options.name}不能为空`, trigger: ['blur', 'change']}]
+          }
+          // 手机号
+          if(item.type === 'inputPhone') {
+            form.value[item.options.id] = null
+            rules.value[item.options.id] = [{ validator: checkMobile, min: 11, max: 11, message: `${item.options.name}格式错误`, trigger: ['blur', 'change']}]
+            if(item.options.required) rules.value[item.options.id].push({required: true, message: `${item.options.name}不能为空`})
+          }
+          // 身份证号
+          if(item.type === 'inputId') {
+            form.value[item.options.id] = null
+            rules.value[item.options.id] = [{ validator: checkId, min: 18, max: 18, message: `${item.options.name}格式错误`, trigger: ['blur', 'change']}]
+            if(item.options.required) rules.value[item.options.id].push({required: true, message: `${item.options.name}不能为空`})
+          }
+          // 金额
+          if(item.type === 'inputPrice') {
+            form.value[item.options.id] = { currency: item.options.currency.length === 1 ? item.options.currency[0].label : null, price: '' }
+            rules.value[item.options.id] = [{ validator: checkPrice, trigger: ['blur', 'change']}]
           }
         })
       }
