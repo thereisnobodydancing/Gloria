@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "NAT": "vite --mode NAT",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -46,3 +46,9 @@ const handleUpdate = (keys, option) => {
   props.options.multiple ? emit('change', option.map(item => item.sectorName)) : emit('change', option.sectorName)
 }
 </script>
+
+<style>
+.n-tree-node-content__text {
+  @apply text-sm !important
+}
+</style>
