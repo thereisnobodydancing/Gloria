@@ -39,6 +39,7 @@
 
 <script setup>
 import api from '/src/api/index.js'
+import { debounce } from 'lodash'
 import { default as SearchIcon } from "@vicons/ionicons5/search"
 import SubmitTab from './tabs/SubmitTab.vue'
 import ReceiverTab from './tabs/ReceiverTab.vue'
@@ -55,9 +56,13 @@ api.get('/announcement/getAnnounceTypeList').then((res) => {
   if(res.data.code === 20000) typeList.value = res.data.data
 })
 
-// 搜索
+// 搜索（防抖）
 const searchValue = ref('')
-const searchUpdate = function(text) {
+const searchUpdate = debounce((text) => {
   searchValue.value = text
-}
+}, 300, { leading: false, trailing: true})
+
+onUnmounted(() => {
+  searchUpdate.cancel()
+})
 </script>

@@ -7,7 +7,7 @@
       'w-full': props.options.width === '3/3'
     }"
   >
-    <n-input-group>
+    <n-input-group v-if="props.options.currency">
       <n-input-group-label 
         class="w-32"
         v-if="props.options.currency.length === 1"
@@ -16,43 +16,29 @@
       </n-input-group-label>
       <n-select 
         v-if="props.options.currency.length > 1"
+        v-model:value="form[props.options.id].currency"
         :options="props.options.currency" 
         placeholder="请选择币种" 
-        :style="{ width: '200px' }" 
-        @update:value="handleCurrencyUpdate"
+        :style="{ width: '200px' }"
       />
-      <n-input-number 
-        v-model:value="priceValue" 
+      <n-input-number
+        v-model:value="form[props.options.id].price" 
         :placeholder="props.options.placeholder" 
         class="w-full"
-        clearable 
-        @update:value="handlePriceUpdate"
+        clearable
       />
     </n-input-group>
-    <p v-if="props.options.showUppercase" class="mt-1 text-sm text-gray-600">{{ numToCny(priceValue) }}</p>
+    <p v-if="props.options.showUppercase" class="mt-1 text-sm text-gray-600">{{ numToCny(form[props.options.id].price) }}</p>
     <p v-if="props.options.desc" class="mt-1 text-xs text-gray-400">{{ props.options.desc }}</p>
   </div>
 </template>
   
 <script setup>
 import { numToCny } from '/src/until/index.js'
+import useFormStore from '/src/store/form.js'
 
-const emit = defineEmits(['change'])
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-
-const currencyValue = ref('')
-const priceValue = ref(null)
-const handlePriceUpdate = (value) => {
-  if(props.options.currency.length === 1) {
-    emit('change', props.options.currency[0].label, value)
-  } else {
-    emit('change', currencyValue.value, value)
-  }
-}
-const handleCurrencyUpdate = (value, option) => {
-  currencyValue.value = option.label
-  emit('change', option.label, priceValue.value)
-}
 </script>

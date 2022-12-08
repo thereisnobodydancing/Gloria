@@ -12,48 +12,50 @@
       </button>
     </div>
     <!-- 内容 -->
-    <div 
-      class="overflow-y-scroll"
-      :style="{height: `${clientHeight - 150}px`}"
-    >
-      <!-- title、info -->
-      <div class="p-7 border-b border-gray-100">
-        <div class="text-base space-x-4">
-          <p class="text-gray-400 space-x-4 inline-block">
-            <span>公告</span>
-            <span>发表于：{{ data.createdTime }} </span>
-            <span>发表人：{{ data.userSimpleVO.userName }}</span>
-            <span>类型：{{ data.typeName }}</span>
-          </p>
-          <button class="text-primary hover:underline" @click="$router.push(`/base/bulletin/write?id=${route.params.id}&type=edit`)">编辑</button>
-          <button class="text-primary hover:underline" @click.stop="removeBulletin()">删除</button>
-        </div>
-        <h2 class="mt-8 text-3xl font-bold text-center line-clamp-1">{{ data.title }}</h2>
-      </div>
-      <!-- content -->
+    <n-spin :show="showLoading">
       <div 
-        class="p-9"  
-        :style="{height: `${clientHeight - 300}px`}"
+        class="overflow-y-scroll"
+        :style="{height: `${clientHeight - 150}px`}"
       >
-        <!-- 内容 -->
-        <div v-html="data.contents" />
-        <!-- 附件 -->
-        <div 
-          v-if="data.fileList.length > 0"
-          class="mt-12"
-        >
-          <p class="text-lg font-bold">附件：</p>
-          <n-upload
-            v-model:file-list="data.fileList"
-            :show-remove-button="false"
-          />
+        <!-- title、info -->
+        <div class="p-7 border-b border-gray-100">
+          <div class="text-base space-x-4">
+            <p class="text-gray-400 space-x-4 inline-block">
+              <span>公告</span>
+              <span>发表于：{{ data.createdTime }} </span>
+              <span>发表人：{{ data.userSimpleVO.userName }}</span>
+              <span>类型：{{ data.typeName }}</span>
+            </p>
+            <button class="text-primary hover:underline" @click="$router.push(`/base/bulletin/write?id=${route.params.id}&type=edit`)">编辑</button>
+            <button class="text-primary hover:underline" @click.stop="removeBulletin()">删除</button>
+          </div>
+          <h2 class="mt-8 text-3xl font-bold text-center line-clamp-1">{{ data.title }}</h2>
         </div>
-        <!-- 已读/未读 -->
-        <div class="w-32 py-8">
-          <base-read-info :read-info="readInfo"/>
+        <!-- content -->
+        <div 
+          class="p-9"  
+          :style="{height: `${clientHeight - 300}px`}"
+        >
+          <!-- 内容 -->
+          <div v-html="data.contents" />
+          <!-- 附件 -->
+          <div 
+            v-if="data.fileList.length > 0"
+            class="mt-12"
+          >
+            <p class="text-lg font-bold">附件：</p>
+            <n-upload
+              v-model:file-list="data.fileList"
+              :show-remove-button="false"
+            />
+          </div>
+          <!-- 已读/未读 -->
+          <div class="w-32 py-8">
+            <base-read-info :read-info="readInfo"/>
+          </div>
         </div>
       </div>
-    </div>
+    </n-spin>
   </div>
 </template>
 
@@ -62,6 +64,7 @@ import api from '/src/api/index.js'
 import { useDialog, useMessage } from 'naive-ui'
 
 const clientHeight = document.documentElement.clientHeight
+const showLoading = ref(true)
 const message = useMessage()
 const dialog = useDialog()
 const route = useRoute()
@@ -79,6 +82,7 @@ const data = ref({
 })
 api.get('/announcement/getDetails', { announceId: route.params.id }).then((res) => {
   if(res.data.code === 20000) Object.assign(data.value, res.data.data)
+  setTimeout(() => showLoading.value = false, 200)
 })
 
 // 查看已读未读人员详情

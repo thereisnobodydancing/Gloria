@@ -3,9 +3,8 @@
   <div class="w-full">
     <base-upload 
       :action="props.options.type === 'text' ? `${baseUrl}/process/uploadFile` : `${baseUrl}/process/uploadPicture`"
-      :file-list="list"
+      :file-list="form[props.options.id]"
       :type="props.options.type"
-      @change="handleUpdate" 
     >
       <template v-if="props.options.type === 'text'">
         <n-button>上传文件</n-button>
@@ -16,11 +15,11 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const list = ref([])
 const baseUrl = import.meta.env.VITE_APP_URL
-const handleUpdate = (list) => emit('change', list)
 </script>

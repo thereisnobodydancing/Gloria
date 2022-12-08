@@ -17,7 +17,7 @@
             <div v-for="(item, index) in slotProps.list" :key="index">
               <div class="flex space-x-3.5">
                 <div class="flex-shrink-0 w-11 h-11" @click="showCard(item.userId)">
-                  <base-avatar :image="item.headshot" :name="item.userName" :width="44" :height="44"/>
+                  <base-avatar :image="item.headshot" :name="item.userName" :width="44" :height="44" :font-size="16" />
                 </div>
                 <div class="flex-grow">
                   <div class="flex items-center">

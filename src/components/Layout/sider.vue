@@ -33,7 +33,7 @@ const menuOptions = ref([
     key: 'Approval',
     type: 'group',
     children: [
-      {label: () => h(RouterLink, {to: '/approval'}, {default: () => '审批中心'}), key: 'Approval', icon: renderApproval(), children: null},
+      {label: () => h(RouterLink, {to: '/approval?type=pending'}, {default: () => '审批中心'}), key: 'Approval', icon: renderApproval(), children: null}
     ]
   }
 ])

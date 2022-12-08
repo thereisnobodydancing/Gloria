@@ -7,23 +7,24 @@
       'w-full': props.options.width === '3/3'
     }"
   >
+    {{ form[props.options.id] }}
     <n-select 
-      v-model:value="value" 
+      v-model:value="form[props.options.id]" 
       :options="props.options.list" 
       :placeholder="props.options.placeholder"
       :multiple="props.options.multiple"
+      value-field="label"
       clearable
-      @update:value="handleUpdate"
     />
     <p v-if="props.options.desc"  class="mt-1 text-xs text-gray-400">{{ props.options.desc }}</p>
   </div>
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const value = ref(null)
-const handleUpdate = (value) => emit('change', value)
 </script>

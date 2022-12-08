@@ -7,15 +7,12 @@
       'w-full': props.options.width === '3/3'
     }"
   >
-    <n-checkbox-group 
-      v-model:value="value"
-      @update:value="handleUpdate"
-    >
+    <n-checkbox-group v-model:value="form[props.options.id]">
       <n-space item-style="display: flex">
         <n-checkbox 
           v-for="i in props.options.list" 
-          :key="i.value" 
-          :value="i.value"
+          :key="i.label" 
+          :value="i.label"
         >
           {{ i.label }}
         </n-checkbox>
@@ -26,10 +23,10 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const value = ref(null)
-const handleUpdate = (value) => emit('change', value)
 </script>

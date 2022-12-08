@@ -7,17 +7,16 @@
       'w-full': props.options.width === '3/3'
     }"
   >
-    <n-radio-group 
-      v-model:value="value" 
+    <n-radio-group
+      v-model:value="form[props.options.id]" 
       name="radiogroup" 
       class="leading-8"
-      @update:value="handleUpdate"
     >
       <n-space>
         <n-radio 
           v-for="item in props.options.list" 
-          :key="item.value" 
-          :value="item.value"
+          :key="item.label" 
+          :value="item.label"
         >
           {{ item.label }}
         </n-radio>
@@ -28,10 +27,10 @@
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const value = ref(null)
-const handleUpdate = (value) => emit('change', value)
 </script>

@@ -2,20 +2,21 @@
 <template>
   <div>
     <n-date-picker
-      v-model:formatted-value="value"
+      v-model:formatted-value="form[props.options.id]"
       :type="props.options.type" 
       :format="dateFeature[props.options.type]"
       :start-placeholder="datePlaceholder[props.options.type] ? datePlaceholder[props.options.type].start : null" 
       :end-placeholder="datePlaceholder[props.options.type] ? datePlaceholder[props.options.type].end : null"
       clearable
-      @update:value="handleUpdate"
     />
     <p v-if="props.options.desc"  class="mt-1 text-xs text-gray-400">{{ props.options.desc }}</p>
   </div>
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
@@ -38,6 +39,4 @@ const dateFeature = {
   quarter: 'yyyy-第Q季',
   quarterrange: 'yyyy-第Q季'
 }
-const value = ref(null)
-const handleUpdate = (value, formattedValue) => emit('change', formattedValue)
 </script>

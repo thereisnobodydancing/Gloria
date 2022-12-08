@@ -36,6 +36,7 @@
           ref="infiniteRef"
           url="/userlog/getMyReceiveLogList"
           :params="params"
+          :style="{ height: `${clientHeight - 250}px` }"
         >
           <template #empty>
             <div 

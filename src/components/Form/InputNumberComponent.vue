@@ -8,22 +8,21 @@
     }"
   >
     <n-input-number
-      v-model:value="value" 
+      v-model:value="form[props.options.id]" 
       :placeholder="props.options.placeholder" 
       :min="props.options.useMin ? props.options.min : undefined"
       :max="props.options.useMax ? props.options.max : undefined"
       clearable
-      @update:value="handleUpdate"
     />
     <p v-if="props.options.desc"  class="mt-1 text-xs text-gray-400">{{ props.options.desc }}</p>
   </div>
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const value = ref(null)
-const handleUpdate = (value) => emit('change', value)
 </script>

@@ -20,75 +20,96 @@
           :key="index" 
           :path="item.options.id"
           :label="`${item.options.name}：`"
+          :show-require-mark="item.options.required"
         >
           <!-- 单行输入文本 -->
           <template v-if="item.type === 'input'">
-            <input-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <input-component :options="item.options" />
           </template>
 
           <!-- 多行输入文本 -->
           <template v-if="item.type === 'textarea'">
-            <input-textarea-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <input-textarea-component :options="item.options" />
           </template>
 
           <!-- 数字输入文本 -->
           <template v-if="item.type === 'inputNumber'">
-            <input-number-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <input-number-component :options="item.options" />
           </template>
 
           <!-- 选择器 -->
           <template v-if="item.type === 'select'">
-            <select-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <select-component :options="item.options" />
           </template>
 
           <!-- 单选框 -->
           <template v-if="item.type === 'radio'">
-            <radio-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <radio-component :options="item.options" />
           </template>
 
           <!-- 多选框 -->
           <template v-if="item.type === 'checkbox'">
-            <checkbox-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <checkbox-component :options="item.options" />
           </template>
 
           <!-- 选择日期 -->
           <template v-if="item.type === 'datePicker'">
-            <date-picker-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <date-picker-component :options="item.options" />
           </template>
 
           <!-- 上传 -->
           <template v-if="item.type === 'upload'">
-            <upload-component :options="item.options" @change="(list) => form[item.options.id] = list" />
+            <upload-component :options="item.options" />
           </template>
 
           <!-- 手机号 -->
           <template v-if="item.type === 'inputPhone'">
-            <input-phone-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <input-phone-component :options="item.options" />
           </template>
 
           <!-- 身份证号 -->
           <template v-if="item.type === 'inputId'">
-            <input-id-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <input-id-component :options="item.options" />
           </template>
 
           <!-- 金额 -->
           <template v-if="item.type === 'inputPrice'">
-            <input-price-component 
-              :options="item.options" 
-              @change="(currency, price) => {
-                form[item.options.id].currency = currency
-                form[item.options.id].price = price
-            }" />
+            <input-price-component :options="item.options" />
           </template>
 
           <!-- 选择职位 -->
           <template v-if="item.type === 'selectPost'">
-            <select-post-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <select-post-component :options="item.options" />
           </template>
 
           <!-- 选择部门 -->
           <template v-if="item.type === 'selectSector'">
-            <select-sector-component :options="item.options" @change="(value) => form[item.options.id] = value" />
+            <select-sector-component :options="item.options" />
+          </template>
+
+          <!-- 选择成员 -->
+          <template v-if="item.type === 'selectUser'">
+            <select-user-component :options="item.options"/>
+          </template>
+
+          <!-- 合同条款 -->
+          <template v-if="item.type === 'contractTerms'">
+            <contract-terms-component :options="item.options" />
+          </template>
+
+          <!-- 开销明细 -->
+          <template v-if="item.type === 'expenseDetails'">
+            <expense-Details-component :options="item.options" />
+          </template>
+
+          <!-- 物品明细 -->
+          <template v-if="item.type === 'itemDetails'">
+            <item-Details-component :options="item.options" />
+          </template>
+
+          <!-- 选择地址 -->
+          <template v-if="item.type === 'selectAddress'">
+            <select-address-component :options="item.options" />
           </template>
         </n-form-item>
       </n-form>
@@ -109,13 +130,16 @@
 
 <script setup>
 import api from '/src/api/index.js'
+// import { compact } from 'lodash'
 import { useMessage } from 'naive-ui'
+import useFormStore from '/src/store/form.js'
 
 const route = useRoute()
 const emit = defineEmits(['submit'])
 const message = useMessage()
 const clientHeight = ref(document.documentElement.clientHeight)
 const showLoading = ref(true)
+const { form } = toRefs(useFormStore())
 
 const processInfoDTO = reactive({
   templateId: null,
@@ -142,7 +166,6 @@ const processInfoDTO = reactive({
 /*******  表单相关  ******/
 const formRef = ref()
 const formList = ref([])
-const form = ref({})
 const rules = ref({})
 // 校验手机号
 const checkMobile = (rule, value) => {
@@ -164,6 +187,28 @@ const checkPrice = (rule, obj) => {
   if(!obj.price) return new Error("没有输入金额")
   return true
 }
+// 校验人员
+const checkUser = (rule, obj) => {
+  if(!obj.optionList || obj.optionList.length === 0) return new Error("没有选择人员")
+  return true
+}
+// 校验合同条款
+const checkContract = (rule, arr) => {
+  if(arr.find(item => !item.content)) return new Error("存在空白条款项，请填写完整")
+  return true
+}
+// 校验开销明细
+const checkExpense = (rule, arr) => {
+  if(arr.expenseList.find(item => !item.expenseUse || !item.amountSpent)) return new Error("存在未填写的明细，请填写完整")
+  return true
+}
+
+// 校验物品明细
+const checkItemDetails = (rule, arr) => {
+  if(arr.find(item => !item.name || item.num === null)) return new Error("存在未填写的明细，请填写完整")
+  return true
+}
+
 // 获取数据
 onMounted(() => getData(route.params.id))
 const getData = (id) => {
@@ -175,10 +220,28 @@ const getData = (id) => {
       if(res.data.data.form) {
         formList.value = JSON.parse(res.data.data.form)
         JSON.parse(res.data.data.form).forEach((item, index) => {
-          // 单行输入、多行输入、数字输入、选择器、单选组、多选组、选择职位、选择部门
-          if(['inputNumber', 'select', 'radio', 'checkbox','textarea', 'input', 'selectPost', 'selectSector'].includes(item.type)) {
+          // 单行输入、多行输入、数字输入、选择器、单选组
+          if(['inputNumber', 'radio','textarea', 'input', 'selectAddress'].includes(item.type)) {
             form.value[item.options.id] = null
             if(item.options.required) rules.value[item.options.id] = [{required: true, message: `${item.options.name}不能为空`}]
+          }
+          // 多选框组
+          if('checkbox'.includes(item.type)) {
+            form.value[item.options.id] = null
+            if(item.options.required) {
+              rules.value[item.options.id] = [{required: true, type: 'array', message: `${item.options.name}不能为空`, trigger: ['blur', 'change']}]
+            }
+          }
+          // 选择器、选择部门
+          if(['select', 'selectSector', 'selectPost'].includes(item.type)) {
+            form.value[item.options.id] = null
+            if(item.options.required) {
+              rules.value[item.options.id] = [{
+                required: true, 
+                type: item.options.multiple ? 'array' : 'string', 
+                message: `${item.options.name}不能为空`
+              }]
+            }
           }
           // 日期选择器
           if(item.type === 'datePicker') {
@@ -200,6 +263,9 @@ const getData = (id) => {
           // 手机号
           if(item.type === 'inputPhone') {
             form.value[item.options.id] = null
+            if(!item.options.required) rules.value[item.options.id] = [
+              {validator: checkMobile, min: 11, max: 11, message: `${item.options.name}格式错误`, trigger: ['blur', 'change']}
+            ]
             if(item.options.required) rules.value[item.options.id] = [
               {required: true, message: `${item.options.name}不能为空`},
               {validator: checkMobile, min: 11, max: 11, message: `${item.options.name}格式错误`, trigger: ['blur', 'change']}
@@ -208,6 +274,9 @@ const getData = (id) => {
           // 身份证号
           if(item.type === 'inputId') {
             form.value[item.options.id] = null
+            if(!item.options.required) rules.value[item.options.id] = [
+              {validator: checkId, min: 18, max: 18, message: `${item.options.name}格式错误`, trigger: ['blur', 'change']}
+            ]
             if(item.options.required) rules.value[item.options.id] = [
               {required: true, message: `${item.options.name}不能为空`},
               {validator: checkId, min: 18, max: 18, message: `${item.options.name}格式错误`, trigger: ['blur', 'change']}
@@ -215,8 +284,31 @@ const getData = (id) => {
           }
           // 金额
           if(item.type === 'inputPrice') {
-            form.value[item.options.id] = { currency: item.options.currency.length === 1 ? item.options.currency[0].label : null, price: '' }
+            form.value[item.options.id] = { currency: item.options.currency.length === 1 ? item.options.currency[0].label : null, price: null }
             if(item.options.required) rules.value[item.options.id] = [{ validator: checkPrice, trigger: ['blur', 'change']}]
+          }
+          // 选择成员
+          if(item.type === 'selectUser') {
+            form.value[item.options.id] = { optionList: [], keyList: [], idList: [] }
+            if(item.options.required) rules.value[item.options.id] = [{ validator: checkUser, trigger: ['blur', 'change']}]
+          }
+          // 合同条款
+          if(item.type === 'contractTerms') {
+            form.value[item.options.id] = [{ content: '' }]
+            if(item.options.required) rules.value[item.options.id] = [{validator: checkContract, trigger: ['blur', 'change']}]
+          }
+          // 开销明细
+          if(item.type === 'expenseDetails') {
+            form.value[item.options.id] = {
+              expenseList: [{ expenseUse: '',  amountSpent: '' }],
+              total: ''
+            }
+            if(item.options.required) rules.value[item.options.id] = [{validator: checkExpense}]
+          }
+          // 物品明细
+          if(item.type === 'itemDetails') {
+            form.value[item.options.id] = [{ name: '', num: null }]
+            if(item.options.required) rules.value[item.options.id] = [{validator: checkItemDetails}]
           }
         })
       }
@@ -225,7 +317,7 @@ const getData = (id) => {
         res.data.data.list.forEach((item, index) => {
           processInfoDTO.approvalsNodeDTOList[index] = {}
           processInfoDTO.approvalsNodeDTOList[index].id = item.id
-          processInfoDTO.approvalsNodeDTOList[index].approvalUserType = item.userSimpleVOList ? item.approvalUser : 1
+          processInfoDTO.approvalsNodeDTOList[index].approvalUserType = item.approvalUser
           processInfoDTO.approvalsNodeDTOList[index].multipleChoice = item.multipleChoice
           processInfoDTO.approvalsNodeDTOList[index].nodeId = item.nodeId
           processInfoDTO.approvalsNodeDTOList[index].nodeName = item.nodeName
@@ -248,11 +340,15 @@ const submit = () => {
       if(processInfoDTO.approvalsNodeDTOList.find(item => item.approvalsOptionList.length === 0)) {
         message.warning('流程不完善')
       } else {
+        showLoading.value = true
         formList.value.forEach(item => item['value'] = form.value[item.options.id])
         processInfoDTO.form = JSON.stringify(formList.value)
         api.post('/process/create', processInfoDTO).then((res) => {
-          alert('提交成功')
-          emit('submit')
+          if(res.data.code === 20000) {
+            showLoading.value = false
+            alert('提交成功')
+            emit('submit')
+          }
         })
       }
     }
@@ -263,7 +359,7 @@ const initData = (newId) => {
   processInfoDTO.approvalsNodeDTOList = formList.value = []
   processInfoDTO.templateId = null
   processInfoDTO.form = ''
-  form.value = {}
+  useFormStore().$reset()
   rules.value = {}
   getData(newId)
 }

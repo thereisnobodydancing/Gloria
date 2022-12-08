@@ -31,8 +31,9 @@
   
 <script setup>
 import api from '/src/api/index.js'
+import useFormStore from '/src/store/form.js'
 
-const emit = defineEmits(['change'])
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
@@ -43,7 +44,9 @@ api.get('/addressBook/structure/getSectorList').then((res) => {
 })
 
 const handleUpdate = (keys, option) => {
-  props.options.multiple ? emit('change', option.map(item => item.sectorName)) : emit('change', option.sectorName)
+  if(!keys) form.value[props.options.id] = null
+  if(keys && !props.options.multiple) form.value[props.options.id] = option.sectorName
+  if(keys && props.options.multiple) form.value[props.options.id] = option.map(item => item.sectorName)
 }
 </script>
 

@@ -8,7 +8,6 @@
     }"
   >
     <n-select
-      v-model:value="value"
       :options="positionOptions"
       label-field="positionName"
       value-field="id" 
@@ -23,18 +22,20 @@
 
 <script setup>
 import api from '/src/api/index.js'
+import useFormStore from '/src/store/form.js'
 
-const emit = defineEmits(['change'])
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const value = ref(null)
 const positionOptions = ref([])
 api.get('/position/getCompanyRoleList').then((res) => {
   positionOptions.value = res.data.data
 })
 
 const handleUpdate = (keys, option) => {
-  props.options.multiple ? emit('change', option.map(item => item.positionName)) : emit('change', option.positionName)
+  if(!keys) form.value[props.options.id] = null
+  if(keys && !props.options.multiple) form.value[props.options.id] = option.positionName
+  if(keys && props.options.multiple) form.value[props.options.id] = option.map(item => item.positionName)
 }
 </script>

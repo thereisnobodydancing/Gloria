@@ -52,6 +52,16 @@
                   <td v-if="i.type === 'inputPrice'">
                     <span>{{ i.value ? `${i.value.price} (${i.value.currency})` : `-` }}</span>
                   </td>
+                  <!-- 合同条款 -->
+                  <td v-if="i.type === 'contractTerms'">
+                    <span>{{ i.value }}</span>
+                  </td>
+                  <!-- 开销明细 -->
+                  <td v-if="i.type === 'expenseDetails'">{{ i.value }}</td>
+                  <!-- 物品明细 -->
+                  <td v-if="i.type === 'itemDetails'">{{ i.value }}</td>
+                   <!-- 省市区 -->
+                   <td v-if="i.type === 'selectAddress'">{{ i.value }}</td>
                 </template>
                 <td>{{ item.approvalsResult }}</td>
               </tr>
@@ -79,6 +89,3 @@ td {
   @apply text-gray-500
 }
 </style>
-
-<!-- 
-[{"type":"input","name":"单行输入框","options":{"id":"input_8nuW7TF7a_","name":"请假理由","type":"text","placeholder":"请输入请假理由","showCount":false,"maxLength":10,"width":"3/3","desc":"我们不接受没有理由的请假","required":true},"value":"fg"},{"type":"inputPhone","name":"电话号码","options":{"id":"inputPhone_WpcuxwM8dI","name":"电话号码","placeholder":"请输入11位电话号码","width":"3/3","desc":"有手机的输入手机号","required":true},"value":"15412312312"},{"type":"selectSector","name":"选择部门","options":{"id":"selectSector_XT1TWNotL_","name":"选择部门","multiple":false,"placeholder":"请选择部门","width":"1/3","desc":"哪个部门的","required":true},"value":"新媒体运营部"},{"type":"selectPost","name":"选择职位","options":{"id":"selectPost_A4xM_IR7-M","name":"选择职位","placeholder":"请选择职位","multiple":false,"width":"1/3","desc":"你是干啥的，交代一下","required":true},"value":"前端工程师"},{"type":"inputId","name":"身份证号","options":{"id":"inputId_sXngDiatrL","name":"身份证号","placeholder":"请输入18位身份证号","width":"3/3","desc":"请假还要身份证号？","required":false},"value":null},{"type":"selectUser","name":"选择成员","options":{"id":"selectUser_9xtGkDM7nI","name":"选择成员","useMax":false,"max":1,"desc":"糖果超甜","required":true}},{"type":"textarea","name":"多行输入框","options":{"id":"textarea_kxgtVhZa0l","name":"备注","placeholder":"请输入备注","showCount":false,"maxLength":30,"width":"3/3","desc":"特殊情况可以填写备注","required":false},"value":null}] -->

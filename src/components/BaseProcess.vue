@@ -15,14 +15,17 @@
       </div>
       <div class="space-y-0.5">
         <p class="text-lg font-bold leading-5 text-gray-600">{{ item.nodeName }}</p>
-        <p class="text-sm text-gray-400">
+        <p 
+          v-if="item.approvalUserType !== 1 && item.approvalsOptionList.length > 0" 
+          class="text-sm text-gray-400"
+        >
           <span v-if="item.approvalUserType === 0">指定成员（共{{ item.approvalsOptionList.length }}人）</span>
-          <span v-if="item.approvalUserType === 1">自选</span>
           <span v-if="item.approvalUserType === 2">部门主管</span>
           <span v-if="item.approvalUserType === 3">直属上级</span>
           <span v-if="item.approvalUserType === 4">指定角色成员（共{{ item.approvalsOptionList.length }}人）</span>
           <span v-if="item.approvalUserType === 5">发起人自己</span>
         </p>
+        <p v-else class="text-sm text-gray-400">自选</p>
       </div>
     </div>
     <div class="w-7/12 h-full pt-2 pb-4">
@@ -30,7 +33,7 @@
         class="ml-5 pl-8 pr-4 pt-2 min-h-[3rem]"
         :class="{'border-l': props.list.length - 1 > index}"
       >
-        <template v-if="item.approvalUserType !== 1">
+        <template v-if="(item.approvalUserType !== 1 && item.approvalsOptionList)">
           <div class="flex flex-wrap">
             <div 
               v-for="(userInfo, userIndex) in item.approvalsOptionList" :key="userIndex" 
@@ -43,7 +46,7 @@
           </div>
         </template>
         <!-- 自选 -->
-        <template v-if="item.approvalUserType === 1">
+        <template v-if="(item.approvalUserType === 1 || item.approvalsOptionList.length === 0)">
           <div class="w-full flex flex-wrap">
             <div 
               v-for="(userInfo, userIndex) in item.approvalsOptionList" :key="userIndex" 

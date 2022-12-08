@@ -17,16 +17,16 @@
             :radius="14"
             :font-size="28" 
           />
-          <div class="space-y-1.5">
-            <p class="text-xl">{{ employeeInfo.userName }}</p>
-            <p class="text-base text-gray-500">{{ employeeInfo.companyName }}</p>
+          <div class="space-y-2">
+            <p class="text-2xl">{{ employeeInfo.userName }}</p>
+            <p class="text-gray-400">{{ employeeInfo.companyName }}</p>
           </div>
         </div>
         <!-- 分割线 -->
         <n-divider><div class="w-1.5 h-1.5 bg-gray-300 rounded-sm" /></n-divider>
         <!-- message -->
         <div class="pt-2 pb-9 px-5">
-          <div class="space-y-6">
+          <div class="space-y-6 text-gray-600">
             <!-- 邮箱 -->
             <p v-if="employeeInfo.emailNumber">
               <span class="w-24 inline-block">邮箱：</span>{{ employeeInfo.emailNumber }}

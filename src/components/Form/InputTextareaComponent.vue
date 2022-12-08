@@ -8,24 +8,23 @@
     }"
   >
     <n-input 
-      v-model:value="value" 
+      v-model:value="form[props.options.id]"
       type="textarea" 
       :showCount="props.options.showCount ? true : false"
-      :maxlength="props.options.maxLength"
+      :maxlength="props.options.showCount ? props.options.maxLength : undefined"
       :placeholder="props.options.placeholder" 
       :autosize="{minRows: 3}" 
       clearable 
-      @update:value="handleUpdate"
     />
     <p v-if="props.options.desc"  class="mt-1 text-xs text-gray-400">{{ props.options.desc }}</p>
   </div>
 </template>
 
 <script setup>
-const emit = defineEmits(['change'])
+import useFormStore from '/src/store/form.js'
+
+const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object
 })
-const value = ref(null)
-const handleUpdate = (value) => emit('change', value)
 </script>
