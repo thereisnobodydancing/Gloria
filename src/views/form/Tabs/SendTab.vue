@@ -187,6 +187,9 @@ const checkPrice = (rule, obj) => {
   if(!obj.price) return new Error("没有输入金额")
   return true
 }
+const checkProSelect = (rule, obj) => {
+  if(!obj.id || obj.id.length === 0) return new Error("您还没有进行选择")
+}
 // 校验人员
 const checkUser = (rule, obj) => {
   if(!obj.optionList || obj.optionList.length === 0) return new Error("没有选择人员")
@@ -221,19 +224,19 @@ const getData = (id) => {
         formList.value = JSON.parse(res.data.data.form)
         JSON.parse(res.data.data.form).forEach((item, index) => {
           // 单行输入、多行输入、数字输入、选择器、单选组
-          if(['inputNumber', 'radio','textarea', 'input', 'selectAddress'].includes(item.type)) {
+          if(['inputNumber', 'radio','textarea', 'input'].includes(item.type)) {
             form.value[item.options.id] = null
             if(item.options.required) rules.value[item.options.id] = [{required: true, message: `${item.options.name}不能为空`}]
           }
           // 多选框组
-          if('checkbox'.includes(item.type)) {
+          if(['checkbox'].includes(item.type)) {
             form.value[item.options.id] = null
             if(item.options.required) {
               rules.value[item.options.id] = [{required: true, type: 'array', message: `${item.options.name}不能为空`, trigger: ['blur', 'change']}]
             }
           }
-          // 选择器、选择部门
-          if(['select', 'selectSector', 'selectPost'].includes(item.type)) {
+          // 选择器
+          if(['select'].includes(item.type)) {
             form.value[item.options.id] = null
             if(item.options.required) {
               rules.value[item.options.id] = [{
@@ -242,6 +245,11 @@ const getData = (id) => {
                 message: `${item.options.name}不能为空`
               }]
             }
+          }
+          // 选择部门、选择职位、选择地址
+          if(['selectSector', 'selectPost', 'selectAddress'].includes(item.type)) {
+            form.value[item.options.id] = { name: '', id: null }
+            if(item.options.required) rules.value[item.options.id] = [{validator: checkProSelect, trigger: ['blur', 'change']}]
           }
           // 日期选择器
           if(item.type === 'datePicker') {

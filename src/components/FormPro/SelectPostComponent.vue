@@ -8,6 +8,7 @@
     }"
   >
     <n-select
+      v-model:value="form[props.options.id].id"
       :options="positionOptions"
       label-field="positionName"
       value-field="id" 
@@ -34,8 +35,8 @@ api.get('/position/getCompanyRoleList').then((res) => {
 })
 
 const handleUpdate = (keys, option) => {
-  if(!keys) form.value[props.options.id] = null
-  if(keys && !props.options.multiple) form.value[props.options.id] = option.positionName
-  if(keys && props.options.multiple) form.value[props.options.id] = option.map(item => item.positionName)
+  if(!keys) form.value[props.options.id].name = ''
+  if(keys && !props.options.multiple) form.value[props.options.id].name = option.positionName
+  if(keys && props.options.multiple) form.value[props.options.id].name = option.map(item => item.positionName).join('、')
 }
 </script>

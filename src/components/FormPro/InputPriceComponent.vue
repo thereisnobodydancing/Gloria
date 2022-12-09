@@ -18,6 +18,7 @@
         v-if="props.options.currency.length > 1"
         v-model:value="form[props.options.id].currency"
         :options="props.options.currency" 
+        value-field="label"
         placeholder="请选择币种" 
         :style="{ width: '200px' }"
       />

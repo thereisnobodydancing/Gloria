@@ -91,7 +91,7 @@ const removeBulletin = function(id) {
       api.delete('/announcement/deleteAnnounce', { announceId: id }).then((res) => {
         if(res.data.code === 20000) {
           message.success('删除成功')
-          basePaginationRef.askApi()
+          basePaginationRef.value.askApi()
         }
         
       })

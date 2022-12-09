@@ -7,7 +7,6 @@
       'w-full': props.options.width === '3/3'
     }"
   >
-    {{ form[props.options.id] }}
     <n-select 
       v-model:value="form[props.options.id]" 
       :options="props.options.list" 

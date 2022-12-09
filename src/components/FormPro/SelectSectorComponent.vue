@@ -8,6 +8,7 @@
     }"
   >
     <n-tree-select
+      v-model:value="form[props.options.id].id"
       :options="sectorList"
       placeholder="请选择部门"
       children-field="list"
@@ -44,9 +45,9 @@ api.get('/addressBook/structure/getSectorList').then((res) => {
 })
 
 const handleUpdate = (keys, option) => {
-  if(!keys) form.value[props.options.id] = null
-  if(keys && !props.options.multiple) form.value[props.options.id] = option.sectorName
-  if(keys && props.options.multiple) form.value[props.options.id] = option.map(item => item.sectorName)
+  if(!keys) form.value[props.options.id].name = ''
+  if(keys && !props.options.multiple) form.value[props.options.id].name = option.sectorName
+  if(keys && props.options.multiple) form.value[props.options.id].name = option.map(item => item.sectorName).join('、')
 }
 </script>
 

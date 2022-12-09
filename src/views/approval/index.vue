@@ -37,6 +37,7 @@
       :style="{ height: `${clientHeight - 145}px` }"
     >
       <base-pagination
+        ref="basePaginationRef"
         :url="urlObj[$route.query.type]"
         :params="params"
         :size="20"
@@ -44,7 +45,7 @@
         <template #empty>
           <div
             class="w-full flex flex-col items-center justify-center space-y-2" 
-            :style="{ height: `${clientHeight - 300}px` }"
+            :style="{height: `${clientHeight - 150}px`}"
           >
             <default-empty v-if="params.keyWord.length === 0" :width="200" :height="200" />
             <search-empty v-if="params.keyWord.length > 0" :width="200" :height="200" />
@@ -78,7 +79,7 @@
                   <!-- 摘要 -->
                   <td>
                     <template v-for="(i, idx) in JSON.parse(item.form)" :key="idx">
-                      <div v-if="(idx < 30)" class="leading-6 flex items-center">
+                      <div v-if="(idx < 3)" class="leading-6 flex items-center">
                         <p class="flex-shrink-0">{{ i.options.name }}：</p>
                         <p class="line-1">{{ getSummary(i) }}</p>
                       </div>
@@ -101,8 +102,8 @@
                     </template>
                     <!-- 已发起 -->
                     <template v-if="$route.query.type === 'initiated'">
-                      <n-button text>
-                        <span class="text-gray-400 hover:underline" @click="cancelApproval(item.proTabId)">撤销申请</span>
+                      <n-button text :disabled="item.approvalsResult === '已撤销'" @click="cancelApproval(item.proTabId)">
+                        <span class="text-gray-400 hover:underline">撤销申请</span>
                       </n-button>
                     </template>
                     <n-button text type="primary" class="hover:underline" @click="showDetail(item)">查看详情</n-button>
@@ -114,23 +115,10 @@
         </template>
       </base-pagination>
     </div>
-    <!-- 待处理 -->
-    <!-- 已处理 -->
-    <!-- 已发起 -->
-    <!-- 我收到的 -->
   </n-card>
-  <n-drawer v-model:show="showDrawer" :width="502" placement="right">
+  <n-drawer v-model:show="showDrawer" :width="600" placement="right">
     <n-drawer-content>
       <template #header>
-        <div class="flex items-center cursor-pointer" @click="showDrawer = false">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path fill-rule="evenodd" d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z" clip-rule="evenodd" />
-          </svg>
-          <p class="text-base font-normal">返回</p>
-        </div>
-      </template>
-      <div>
-        <!-- title -->
         <div class="flex items-center space-x-2.5">
           <div 
             class="flex-shrink-0 w-11 h-11 rounded cursor-pointer"
@@ -146,14 +134,87 @@
             </p>
           </div>
         </div>
-        <!-- content -->
-        <div class="mt-10 space-y-7">
-          <div v-for="(item, index) in JSON.parse(drawerData.form)">
-            <p class="text-lg font-bold">{{ item.options.name }}</p>
-            <p>{{ item.value }}</p>
-          </div>
+      </template>
+      <!-- content -->
+      <div class="space-y-8 pt-2 pb-4">
+        <div 
+          v-for="(item, index) in JSON.parse(drawerData.form)" 
+          :key="index"
+          class="space-y-2.5"
+        >
+          <p class="text-lg font-bold">{{ item.options.name }}</p>
+          <p 
+            v-if="!['contractTerms', 'expenseDetails', 'itemDetails'].includes(item.type)" 
+            class="text-sm text-gray-500"
+          >
+            {{ getSummary(item)}}
+          </p>
+          <!-- 合同条款 -->
+          <template v-if="item.type === 'contractTerms'">
+            <div v-for="(i, idx) in item.value" class="text-sm flex">
+              <p class="flex-shrink-0">条款{{ idx + 1 }}：</p>
+              <p class="text-gray-500">{{ i.content }}</p>
+            </div>
+          </template>
+          <!-- 开销明细 -->
+          <template v-if="item.type === 'expenseDetails'">
+            <n-table :bordered="false" :single-line="false" size="small">
+              <thead>
+                <tr>
+                  <th>开销用途</th>
+                  <th>开销金额</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(i, idx) in item.value.expenseList">
+                  <td>{{ i.expenseUse }}</td>
+                  <td>{{ i.amountSpent }}</td>
+                </tr>
+              </tbody>
+            </n-table>
+            <p class="text-sm">合计：{{ item.value.total }}</p>
+          </template>
+          <!-- 物品明细 -->
+          <template v-if="item.type === 'itemDetails'">
+            <n-table :bordered="false" :single-line="false" size="small">
+              <thead>
+                <tr>
+                  <th>物品名称</th>
+                  <th>物品数量</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(i, idx) in item.value">
+                  <td>{{ i.name }}</td>
+                  <td>{{ i.num }}</td>
+                </tr>
+              </tbody>
+            </n-table>
+          </template>
         </div>
       </div>
+      <template #footer v-if="['pending', 'initiated'].includes($route.query.type)">
+        <div v-if="$route.query.type === 'pending'" class="flex items-center space-x-4">
+          <div class="w-28" @click="handleApproval(drawerData, true)">
+            <n-button type="primary" block size="large">通过</n-button>
+          </div>
+          <div class="w-28" @click="handleApproval(drawerData, false)">
+            <n-button type="primary" block ghost size="large">不通过</n-button>
+          </div>
+        </div>
+        <div v-if="$route.query.type === 'initiated'" class="w-28">
+          <n-button 
+            type="primary" 
+            block 
+            ghost 
+            size="large"
+            :disabled="drawerData.approvalsResult === '已撤销'"
+            @click="cancelApproval(drawerData.proTabId)"
+          >
+            撤销申请
+          </n-button>
+        </div>
+      </template>
     </n-drawer-content>
   </n-drawer>
   <!-- 名片 -->
@@ -170,6 +231,7 @@ const dialog = useDialog()
 const message = useMessage()
 const router = useRouter()
 const clientHeight = ref(document.documentElement.clientHeight)
+const basePaginationRef = ref()
 
 const tabList = [
   { name: 'pending', tab: '待处理' },                                 
@@ -215,17 +277,16 @@ const getSummary = ({type, value, options}) => {
       if(!value.optionList || value.optionList.length === 0) return '-'
       if(value.optionList || value.optionList.length > 0) return value.optionList.map(item => item.name).join('、')
     }
-    if(type === 'datePicker' && typeof(value) === 'object') {
-      return value.join(' 至 ')
-    }
+    // 选择日期
+    if(type === 'datePicker' && typeof(value) === 'object') return value.join(' 至 ')
     // 金额
-    if(type === 'inputPrice') {
-      return !value.price ? '-' : `${value.price} (${value.currency})`
-    }
+    if(type === 'inputPrice') return !value.price ? '-' : `${value.price} (${value.currency})`
     // 多选框组
-    if('checkbox'.includes(type)) {
-      return value + ''
-    }
+    if(['checkbox'].includes(type)) return value.join('、')
+    // 选择器
+    if(['select'].includes(type) && options.multiple) return value.join('、')
+    // 特殊
+    if(['selectSector', 'selectPost', 'selectAddress'].includes(type)) return value.name
     if(['contractTerms', 'expenseDetails', 'itemDetails'].includes(type)) return '……'
     return value
   }
@@ -249,6 +310,8 @@ const handleApproval = function(data, flag) {
         form: data.form
       }).then((res) => {
         if(res.data.code === 20000) message.success('操作成功')
+        basePaginationRef.value.askApi()
+        showDrawer.value = false
       })
     },
     onNegativeClick: () => {}
@@ -264,6 +327,8 @@ const cancelApproval = (id) => {
     onPositiveClick: () => {
       api.post('/process/repealRequest', { requestId: id }).then((res) => {
         if(res.data.code === 20000) message.success('撤销成功')
+        basePaginationRef.value.askApi()
+        showDrawer.value = false
       })
     },
     onNegativeClick: () => {}
