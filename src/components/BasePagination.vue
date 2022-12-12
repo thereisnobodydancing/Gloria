@@ -1,7 +1,7 @@
 <template>
   <n-spin
     :show="loading" 
-    class="w-full relative"
+    class="w-full h-full relative"
   >
     <slot v-if="localList.length === 0 && !loading" name="empty" />
     <slot v-if="localList.length > 0" :list="localList" />
@@ -63,7 +63,7 @@ const askApi = debounce((more = true) => {
       total.value = 0
       localList.value = []
     }
-    setTimeout(() => loading.value = false, 100)
+    setTimeout(() => loading.value = false, 200)
   })
   setTimeout(() => loading.value = false, 200)
 }, 100, { leading: false, trailing: true})
@@ -83,6 +83,8 @@ watch(() => props.size, value => {
 })
 
 watch(() => props.url, value => {
+  loading.value = true
+  localList.value = []
   askApi(false)
 })
 

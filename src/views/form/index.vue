@@ -26,8 +26,10 @@ const route = useRoute()
 const defaultTab = ref('send')
 
 watch(() => route.params.id, newId => {
-  defaultTab.value = 'send'
-  nextTick(() => sendRef.value.initData(newId))
+  if(route.name === 'Form') {
+    defaultTab.value = 'send'
+    nextTick(() => sendRef.value.initData(newId))
+  }
 })
 
 // 发起申请
