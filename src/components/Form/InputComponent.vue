@@ -21,7 +21,6 @@
 
 <script setup>
 import useFormStore from '/src/store/form.js'
-
 const { form } = toRefs(useFormStore())
 const props = defineProps({
   options: Object

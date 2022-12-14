@@ -123,7 +123,6 @@
   </n-card>
   <approval-modal 
     ref="approvalRef" 
-    :data="drawerData" 
     @approve="handleApproval"
     @cancel="cancelApproval"
   />
@@ -183,10 +182,11 @@ const { getSummary } = useApproval()
 
 // 查看详情
 const approvalRef = ref()
-const drawerData = ref({})
 const showDetail = (data) => {
-  drawerData.value = data
-  approvalRef.value.showDrawer = true
+  approvalRef.value.drawer.show = true
+  approvalRef.value.drawer.data = data
+  approvalRef.value.drawer.form = JSON.parse(data.form)
+  approvalRef.value.drawer.state = new Array(JSON.parse(data.form).length).fill(false)
 }
 
 // 审批
@@ -208,9 +208,7 @@ const handleApproval = function(data, flag) {
       }).then((res) => {
         if(res.data.code === 20000) message.success('操作成功')
         basePaginationRef.value.askApi()
-        approvalRef.value.showDrawer = false
-        router.replace('/approval?type=processed')
-        active.value = 'processed'
+        approvalRef.value.drawer.show = false
       })
     },
     onNegativeClick: () => {}
@@ -227,7 +225,7 @@ const cancelApproval = (id) => {
       api.post('/process/repealRequest', { requestId: id }).then((res) => {
         if(res.data.code === 20000) message.success('撤销成功')
         basePaginationRef.value.askApi()
-        approvalRef.value.showDrawer = false
+        approvalRef.value.drawer.show = false
       })
     },
     onNegativeClick: () => {}

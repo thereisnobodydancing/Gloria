@@ -5,6 +5,7 @@
       class="w-full overflow-y-scroll" 
       :style="{height: `${clientHeight - 150}px`}"
     >
+      {{ form }}
       <!-- 表单 -->
       <n-form
         ref="formRef"
