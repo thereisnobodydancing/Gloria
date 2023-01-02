@@ -7,7 +7,6 @@
       'w-full': props.options.width === '3/3'
     }"
   >
-    {{ form[props.options.id] }}
     <n-cascader
       v-model:value="form[props.options.id].id"
       :placeholder="props.options.placeholder"
@@ -38,7 +37,6 @@ api.get('/process/getAddress').then((res) => {
 })
 
 const changeCity = (value, option, pathValues) => {
-  console.log(pathValues)
   if(!pathValues) form.value[props.options.id].name = null
   if(pathValues && pathValues.length === 1) form.value[props.options.id].name = option.name
   if(pathValues && pathValues.length > 1) form.value[props.options.id].name = pathValues.map(item => item.name).join('/')

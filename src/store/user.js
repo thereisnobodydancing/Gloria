@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
 
-export default defineStore('form', () => {
-  const form = ref({})
+export default defineStore('user', () => {
+  const user = ref({})
   return {
-    form
+    user
   }
 },{
   persist: true       // 支持持久化

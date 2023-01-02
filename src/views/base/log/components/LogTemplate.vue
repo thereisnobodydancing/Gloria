@@ -51,7 +51,7 @@ const props = defineProps({
   typeId: Number,
   data: Object
 })
-const list = ref(getLogTemplate.value(props.typeId).subTitles)
+const list = ref(null)
 watch(() => props.typeId, newId => {
   list.value = getLogTemplate.value(newId).subTitles
 })

@@ -3,9 +3,8 @@
   <n-spin :show="showLoading">
     <div
       class="w-full overflow-y-scroll" 
-      :style="{height: `${clientHeight - 150}px`}"
+      :style="{height: `${clientHeight - 170}px`}"
     >
-      {{ form }}
       <!-- 表单 -->
       <n-form
         ref="formRef"

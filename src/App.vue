@@ -1,5 +1,10 @@
 <template>
-  <n-config-provider :theme-overrides="themeOverrides" :locale="zhCN" :date-locale="dateZhCN" preflight-style-disabled>
+  <n-config-provider 
+    :theme-overrides="themeOverrides" 
+    :locale="zhCN" 
+    :date-locale="dateZhCN" 
+    preflight-style-disabled
+  >
     <n-message-provider container-style="padding:12px">
       <n-dialog-provider>
         <router-view v-slot="{ Component }">

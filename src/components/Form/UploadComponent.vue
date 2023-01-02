@@ -5,6 +5,7 @@
       :action="props.options.type === 'text' ? `${baseUrl}/process/uploadFile` : `${baseUrl}/process/uploadPicture`"
       :file-list="form[props.options.id]"
       :type="props.options.type"
+      @change="changeFileUpload"
     >
       <template v-if="props.options.type === 'text'">
         <n-button>上传文件</n-button>
@@ -22,4 +23,7 @@ const props = defineProps({
   options: Object
 })
 const baseUrl = import.meta.env.VITE_APP_URL
+
+// 上传文件
+const changeFileUpload = (fileList) => form.value[props.options.id] = fileList
 </script>

@@ -33,7 +33,13 @@
             @click="$router.push(`/base/bulletin/detail/${item.id}?type=receiver`)"
           >
             <div class="w-full h-full flex flex-col items-start justify-around px-2">
-              <h3 class="text-base">{{ item.title }}</h3>
+              <h3 
+                class="text-base"
+                :class="item.setTop ? 'text-primary' : 'text-gray-700'"
+              >
+                <span v-if="item.setTop">【置顶】</span>
+                {{ item.title }}
+              </h3>
               <div class="text-sm text-gray-400 w-2/3">
                 <p v-html="item.contents" class="line-1" />
               </div>

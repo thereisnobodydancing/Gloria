@@ -18,7 +18,7 @@ export function useApproval() {
       if(['select'].includes(type) && options.multiple) return value.join('、')
       // 特殊
       if(['selectSector', 'selectPost', 'selectAddress'].includes(type)) return value.name
-      if(['contractTerms', 'expenseDetails', 'itemDetails'].includes(type)) return '……'
+      if(['contractTerms', 'expenseDetails', 'itemDetails', 'upload'].includes(type)) return '……'
       return value
     }
   }

@@ -82,6 +82,27 @@ const routes = [
         component:() => import('../views/form/index.vue'),
         meta: { name: 'Form', common: false }
       },
+      /** -------个人中心------- **/
+      {
+        path: '/user',
+        name: 'User',
+        component:() => import('../views/user/index.vue'),
+        meta: { name: 'User', common: true }
+      },
+      // 修改头像
+      {
+        path: '/change-avatar',
+        name: 'ChangeAvatar',
+        component:() => import('../views/user/change-avatar.vue'),
+        meta: { name: 'User', common: true }
+      },
+      // 修改密码
+      {
+        path: '/change-password',
+        name: 'ChangePassword',
+        component:() => import('../views/user/change-password.vue'),
+        meta: { name: 'User', common: true }
+      },
       /** --------404-------- **/
       {
         path: '/:pathMatch(.*)*',

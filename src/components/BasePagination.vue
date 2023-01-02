@@ -63,9 +63,9 @@ const askApi = debounce((more = true) => {
       total.value = 0
       localList.value = []
     }
-    setTimeout(() => loading.value = false, 200)
+    setTimeout(() => loading.value = false, 250)
   })
-  setTimeout(() => loading.value = false, 200)
+  setTimeout(() => loading.value = false, 250)
 }, 100, { leading: false, trailing: true})
 
 onMounted(() => { if(props.auto) askApi()})

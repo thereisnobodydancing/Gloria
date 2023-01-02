@@ -24,24 +24,26 @@
             </template>
           </n-input>
           <!-- 树列表 -->
-          <div 
-            class="mt-4 w-full h-[530px] overflow-y-scroll"
-            :class="{'flex items-center justify-center': modal.options.length === 0}"
-          >
-            <n-tree
-              :checked-keys="select.keys"
-              :show-irrelevant-nodes="modal.showIrrelevantNodes"
-              block-line
-              cascade
-              checkable
-              :data="modal.options"
-              :pattern="modal.pattern"
-              :check-strategy="props.strategy"
-              children-field="list"
-              label-field="name"
-              @update:checked-keys="handleChedkedKeysChange"
-            />
-          </div>
+          <n-spin :show="showListLoading" class="w-full h-[530px]">
+            <div 
+              class="mt-4 w-full h-[530px] overflow-y-scroll"
+              :class="{'flex items-center justify-center': modal.options.length === 0}"
+            >
+              <n-tree
+                :checked-keys="select.keys"
+                :show-irrelevant-nodes="modal.showIrrelevantNodes"
+                block-line
+                cascade
+                checkable
+                :data="modal.options"
+                :pattern="modal.pattern"
+                :check-strategy="props.strategy"
+                children-field="list"
+                label-field="name"
+                @update:checked-keys="handleChedkedKeysChange"
+              />
+            </div>
+          </n-spin>
         </div>
         <!-- right -->
         <div class="flex-shrink-0 w-1/2 min-h-full px-5 pb-5 space-y-4">
@@ -152,6 +154,7 @@ const select = reactive({
   options: []   // 选中项的内容数组
 })
 // 获取左侧options
+const showListLoading = ref(true)
 const getOptions = function() {
   api.get('/addressBook/structure/getSectorAndUser').then((res) => {
     modal.options = res.data.data
@@ -163,6 +166,7 @@ const setSuffix = function(list) {
     if(item.type === 'sector') item.suffix = renderPrefix('sector_sub')
     if (item.list && item.list.length > 0) setSuffix(item.list)
   })
+  showListLoading.value = false
 }
 
 // 白名单id

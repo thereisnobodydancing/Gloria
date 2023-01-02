@@ -4,7 +4,7 @@
     class="bg-no-repeat bg-cover bg-center relative"
     style="background-image: url(https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-1.2.1&amp;ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&amp;auto=format&amp;fit=crop&amp;w=1951&amp;q=80)"
   >
-    <div class="absolute bg-gradient-to-b from-teal-700/80 via-teal-600/90 to-orange-200/90 opacity-75 inset-0 z-0" />
+    <div class="absolute bg-gradient-to-b from-teal-700/80 via-teal-600/90 to-orange-100/90 opacity-75 inset-0 z-0" />
     <div class="min-h-screen sm:flex sm:flex-row mx-0 justify-center">
       <div class="flex-col flex  self-center p-10 sm:max-w-5xl xl:max-w-2xl  z-10">
         <div class="self-start hidden lg:flex flex-col  text-white">
@@ -61,34 +61,6 @@
 </template>
 
 <script setup>
-import api from '/src/api/index.js'
-import { useMessage } from 'naive-ui'
-
-const message = useMessage()
-const router = useRouter()
-
-const form = reactive({
-  mobile: localStorage.getItem('mobile') ? localStorage.getItem('mobile') : '',
-  password: ''
-})
-
-const forgetPwd = () => message.info('真厉害，密码都能忘')
-
-const btnDisabled = ref(false)
-const login = function () {
-  if (!form.mobile || !form.password) { message.warning('请填写完整信息!'); return }
-  btnDisabled.value = true
-  api.post('/open/login', form).then((res) => {
-    if (res.data.code !== 20000) form.password = ''
-    if (res.data.code === 20000) {
-      sessionStorage.setItem('token', res.data.data.token)
-      localStorage.setItem('mobile', res.data.data.user.mobile)
-      sessionStorage.setItem('user', JSON.stringify(res.data.data.user))
-      message.success(`欢迎你，${res.data.data.user.userName}`)
-      router.push('/')
-    }
-    setTimeout(() => btnDisabled.value = false, 200)
-  })
-  setTimeout(() => btnDisabled.value = false, 2000)
-}
+import { useLogin } from '/src/composables/useLogin.js'
+const { form, forgetPwd, btnDisabled, login } = useLogin()
 </script>

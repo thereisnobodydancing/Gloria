@@ -32,19 +32,20 @@ import SubmitTab from './tabs/SubmitTab.vue'
 import ReceiverTab from './tabs/ReceiverTab.vue'
 import CommentsTab from './tabs/CommentsTab.vue'
 import useLogStore from '/src/store/log.js'
+import useUserStore from '/src/store/user.js'
 import { useDialog } from 'naive-ui'
 import { nanoid } from  'nanoid'
 
 const router = useRouter()
 const dialog = useDialog()
 const { logData, userId } = toRefs(useLogStore())
-const user = JSON.parse(sessionStorage.getItem('user'))
+const { user } = toRefs(useUserStore())
 
 //tabs相关
 const changeTabs = (value) => router.replace(`/base/log?type=${value}`)
 // 写日志
 const createLog = () => {
-  if(logData.value.id && logData.value.id.length > 0 && userId.value === user.id) {
+  if(logData.value.id && logData.value.id.length > 0 && userId.value === user.value.id) {
     dialog.info({
       title: '提示',
       content: '发现有未提交数据，是否继续编辑？',

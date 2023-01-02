@@ -1,23 +1,30 @@
 <template>
-  <div class="flex-shrink-0 w-64 h-full border-r">
-    <div :style="{height: `${height}px`}" class="overflow-y-scroll pb-10 relative">
-      <router-link to="/" class="px-4 pt-2 pb-4 block sticky top-0 bg-white z-20">
-        <n-button block size="large" type="primary">工作台</n-button>
-      </router-link>
-      <n-menu
-        v-model:value="$route.meta.name"
-        :options="menuOptions"
-      />
+  <n-spin :show="showSiderLoading">
+    <div class="flex-shrink-0 w-64 h-full border-r">
+      <div 
+        class="overflow-y-scroll pb-10 relative"
+        :style="{height: `${clientHeight - 64}px`}"
+      >
+        <router-link to="/" class="px-4 pt-2 pb-4 block sticky top-0 bg-white z-20">
+          <n-button block size="large" type="primary">工作台</n-button>
+        </router-link>
+        <n-menu
+          v-model:value="$route.meta.name"
+          :options="menuOptions"
+        />
+      </div>
     </div>
-  </div>
+  </n-spin>
 </template>
 
 <script setup>
 import api from '/src/api/index.js'
 import { RouterLink } from "vue-router"
-import { renderBuild, renderLog, renderBulletin, renderApproval, renderCube } from '/src/until/render.js'
+import { renderBuild, renderLog, renderBulletin, renderApproval, renderCube, renderUser } from '/src/until/render.js'
 
-const height = document.documentElement.clientHeight - 64
+const clientHeight = document.documentElement.clientHeight
+const showSiderLoading = ref(true)
+
 const menuOptions = ref([
   {
     label: '通用管理',
@@ -35,11 +42,19 @@ const menuOptions = ref([
     children: [
       {label: () => h(RouterLink, {to: '/approval?type=pending'}, {default: () => '审批中心'}), key: 'Approval', icon: renderApproval(), children: null}
     ]
+  },
+  {
+    label: '个人中心',
+    key: 'User',
+    type: 'group',
+    children: [
+      {label: () => h(RouterLink, {to: '/user'}, {default: () => '个人信息'}), key: 'User', icon: renderUser(), children: null}
+    ]
   }
 ])
 
 const getFormSider = function(label, name, list) {
-  menuOptions.value.push({
+  menuOptions.value.splice(menuOptions.value.length - 1, 0, {
     label: label,
     key: name,
     type: 'group',
@@ -53,7 +68,6 @@ const getFormSider = function(label, name, list) {
     })
   })
 }
-
 api.get('/common/navigation').then((res) => {
   res.data.data.forEach(item => {
     // 1-通讯录
@@ -85,5 +99,6 @@ api.get('/common/navigation').then((res) => {
     // 7-其他
     if(item.navigationName === 'FormOther' && item.list.length > 0) getFormSider('其他', 'FormOther', item.list)
   })
+  nextTick(() => showSiderLoading.value = false)
 })
 </script>

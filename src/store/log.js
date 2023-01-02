@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia'
-// import { watch } from 'vue'
-const user = JSON.parse(sessionStorage.getItem('user'))
+import useUserStore from '/src/store/user.js'
+const { user } = toRefs(useUserStore())
 
-export default defineStore('template', () => {
-  const userId = ref(user.id)
+export default defineStore('log', () => {
+  const userId = ref(user.value.id)
   // 日志类型列表
   const logTypeList = ref([
     { label: '工作日报', value: 1 },

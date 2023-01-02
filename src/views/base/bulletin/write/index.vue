@@ -129,12 +129,14 @@ import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 import { useDialog, useMessage } from 'naive-ui'
 import { useEditor } from '/src/composables/useEditor.js'
+import useUserStore from '/src/store/user.js'
 
 // 路由
 const route = useRoute()
 const router = useRouter()
 const message = useMessage()
 const dialog = useDialog()
+const { user } = toRefs(useUserStore())
 const titleObj = { edit: '编辑', create: '写公告' }
 const btnObj = { edit: '修改', create: '提交' }
 // 窗口高度、上传图片地址
@@ -156,7 +158,7 @@ const data = reactive({
   contents: '',         // 公告内容
   createdTime: '',      // 公告创建时间
   fileList: [],         // 公告附件
-  recipientDTOList: [{ recipientId: JSON.parse(sessionStorage.getItem('user')).companyId,  recipientType: 1 }]
+  recipientDTOList: [{ recipientId: user.value.companyId,  recipientType: 1 }]
 })
 if(route.query.type === 'edit') {
   api.get('/announcement/getDetails', { announceId: route.query.id }).then((res) => {
@@ -204,7 +206,7 @@ const recipientData = reactive({
 const changeRecipientType = function(value) {
   if(value === 'all') {
     recipientData.options = recipientData.keys = recipientData.ids = []
-    data.recipientDTOList = [{ recipientId: JSON.parse(sessionStorage.getItem('user')).companyId,  recipientType: 1 }]
+    data.recipientDTOList = [{ recipientId: user.value.companyId,  recipientType: 1 }]
   }
   if(value === 'select') showUserModal()
 }
@@ -245,7 +247,7 @@ const removeRecipientOption = function(key, id, index) {
   data.recipientDTOList.splice(index, 1)
   if(recipientData.options.length === 0) {
     recipientType.value = 'all'
-    data.recipientDTOList = [{ recipientId: JSON.parse(sessionStorage.getItem('user')).companyId,  recipientType: 1 }]
+    data.recipientDTOList = [{ recipientId: user.value.companyId,  recipientType: 1 }]
   }
 }
 

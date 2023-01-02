@@ -27,15 +27,39 @@
             <div class="w-full flex items-center justify-between">
               <p class="text-sm text-gray-400">{{ item.options.name }}</p>
               <div v-if="showEditBtn($route.query.type, item.options.id)">
-                <n-button text @click="drawer.state[index] = !drawer.state[index]">
+                <n-button 
+                  text 
+                  @click="() => {
+                    if(drawer.state[index]) {
+                      drawer.state[index] = false
+                      return
+                    }
+                    if(!drawer.state[index]) {
+                      drawer.state = new Array(drawer.state.length).fill(false)
+                      drawer.state[index] = true
+                      return
+                    }
+                  }">
                   <span class="text-gray-500 hover:text-primary">{{ drawer.state[index] ? '确定' : '编辑' }}</span>
                 </n-button>
               </div>
             </div>
             <!-- 只读状态 -->
             <div v-if="!drawer.state[index]">
-              <template v-if="!['contractTerms', 'expenseDetails', 'itemDetails', 'selectUser'].includes(item.type)">
+              <template v-if="!['upload', 'contractTerms', 'expenseDetails', 'itemDetails', 'selectUser'].includes(item.type)">
                 <p class="text-base text-gray-600">{{ getSummary(item)}}</p>
+              </template>
+              <!-- 上传 -->
+              <template v-if="item.type === 'upload'">
+                <n-upload
+                  v-model:file-list="item.value"
+                  action="https://www.mocky.io/v2/5e4bafc63100007100d8b70f"
+                  :list-type="item.options.type"
+                  class="mt-2"
+                  disabled
+                >
+                  <n-button v-if="item.options.type==='text'">{{ item.options.btnText }}</n-button>
+                </n-upload>
               </template>
               <!-- 合同条款 -->
               <template v-if="item.type === 'contractTerms'">
@@ -101,7 +125,6 @@
             </div>
             <!-- 编辑状态 -->
             <div v-else>
-              {{ item.type }}
               <!-- 单行输入框 -->
               <template v-if="item.type === 'input'">
                 <n-input
@@ -188,6 +211,19 @@
                   :end-placeholder="datePlaceholder[item.options.type] ? datePlaceholder[item.options.type].end : null"
                   clearable
                 />
+              </template>
+              <!-- 上传 -->
+              <template v-if="item.type === 'upload'">
+                <base-upload 
+                  :action="item.options.type === 'text' ? `${baseUrl}/process/uploadFile` : `${baseUrl}/process/uploadPicture`"
+                  :file-list="item.value"
+                  :type="item.options.type"
+                  @change="(fileList) => item.value = fileList"
+                >
+                  <template v-if="item.options.type === 'text'">
+                    <n-button>上传文件</n-button>
+                  </template>
+                </base-upload>
               </template>
               <!-- 电话号码 -->
               <template v-if="item.type === 'inputPhone'">
@@ -384,7 +420,6 @@
                 />
               </template>
               <!-- 选择成员 -->
-              <!-- 选择成员 -->
               <template v-if="item.type === 'selectUser'">
                 <div class="mt-2 w-full flex flex-wrap">
                   <div
@@ -411,7 +446,46 @@
                       </svg>
                     </div>
                   </div>
+                  <button
+                    v-if="!item.options.useMax || item.options.useMax && item.options.max > item.value.optionList.length"
+                    aria-label="选择成员"
+                    class="w-10 h-10 mr-6 mb-8 rounded-md border border-dashed border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
+                    @click="showSelUserModal(item.value.optionList, item.value.keyList, item.value.idList)"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mx-auto">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                    </svg>
+                  </button>
                 </div>
+                <add-user-modal
+                  ref="addUserRef" 
+                  :max="item.options.useMax ? item.options.max : null"
+                  @confirm="({options, keys, ids}) => {
+                    item.value.optionList = options
+                    item.value.keyList = keys
+                    item.value.idList = ids
+                  }" 
+                />
+              </template>
+              <!-- 选择地址 -->
+              <template v-if="item.type === 'selectAddress'">
+                <n-cascader
+                  v-model:value="item.value.id"
+                  :placeholder="item.options.placeholder"
+                  :options="cityList"
+                  :show-path="true"
+                  check-strategy="all"
+                  :filterable="true"
+                  label-field="name"
+                  value-field="id"
+                  children-field="addressVOList"
+                  clearable
+                  @update:value="(value, option, pathValues) => {
+                    if(!pathValues) item.value.name = null
+                    if(pathValues && pathValues.length === 1) item.value.name = option.name
+                    if(pathValues && pathValues.length > 1) item.value.name = pathValues.map(i => i.name).join('/')
+                  }"
+                />
               </template>
             </div>
           </div>
@@ -451,11 +525,9 @@ import api from '/src/api/index.js'
 import { useApproval } from '/src/composables/useApproval.js'
 import { useDateData } from '/src/composables/useDateData.js'
 import { numToCny } from '/src/until/index.js'
-const emit = defineEmits(['approve', 'cancel'])
-const props = defineProps({
-  data: Object
-})
 
+const emit = defineEmits(['approve', 'cancel'])
+const baseUrl = import.meta.env.VITE_APP_URL
 const drawer = reactive({
   show: false,
   data: {},
@@ -477,7 +549,6 @@ const showEditBtn = (type, id) => {
   if(['pending', 'received'].includes(type) && drawer.data.formUpdatePerm.includes(id)) return true
   return false
 }
-
 // 职位列表
 const positionOptions = ref([])
 api.get('/position/getCompanyRoleList').then((res) => {
@@ -488,7 +559,16 @@ const sectorList = ref([])
 api.get('/addressBook/structure/getSectorList').then((res) => {
   if(res.data.code === 20000) sectorList.value = res.data.data
 })
-
+// 人员
+const addUserRef = ref()
+const showSelUserModal = function(optionList, keyList, idList) {
+  addUserRef.value[0].showModal(optionList, keyList, idList)
+}
+// 地址
+const cityList = ref([])
+api.get('/process/getAddress').then((res) => {
+  cityList.value = res.data.data
+})
 // 同意/拒绝审批
 const handleApproval = (flag) => {
   drawer.data.form = JSON.stringify(drawer.form)

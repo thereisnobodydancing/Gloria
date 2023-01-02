@@ -81,11 +81,12 @@
 import { pickBy } from 'lodash'
 import api from '/src/api/index.js'
 import { useDialog, useMessage } from 'naive-ui'
+import useUserStore from '/src/store/user.js'
 import BusinessCardModal from '/src/components/Modal/BusinessCardModal.vue'
 
 const message = useMessage()
 const dialog = useDialog()
-const user = JSON.parse(sessionStorage.getItem('user'))
+const { user } = toRefs(useUserStore())
 
 const props = defineProps({
   logId: {

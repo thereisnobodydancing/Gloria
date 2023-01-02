@@ -25,38 +25,28 @@
 
 <script setup>
 import logoImg from '/src/assets/logo.png'
+import useUserStore from '/src/store/user.js'
 import { NIcon } from "naive-ui"
-import { HomeOutline as HomeOutIcon, LogOutOutline as LogOutIcon } from "@vicons/ionicons5"
-import { useDialog, useMessage } from 'naive-ui'
+import { default as HomeOutIcon} from "@vicons/ionicons5/HomeOutline"
+import { default as UserOutIcon} from "@vicons/ionicons5/PersonOutline"
+import { default as LogOutIcon} from "@vicons/ionicons5/LogOutOutline"
+import { useLogin } from '/src/composables/useLogin.js'
 
 const router = useRouter()
-const dialog = useDialog()
-const message = useMessage()
-const user = JSON.parse(sessionStorage.getItem('user'))
+const { user } = toRefs(useUserStore())
+console.log(user)
 const renderIcon = function (icon) {
   return () => h(NIcon, null, { default: () => h(icon) })
 }
 const options = [
   {label: '首页', key: "HomeOut", icon: renderIcon(HomeOutIcon)},
+  {label: '个人中心', key: "UserOut", icon: renderIcon(UserOutIcon)},
   {label: '退出登录', key: "LogOut", icon: renderIcon(LogOutIcon)}
 ]
-// 退出登录
-const LogOut = function() {
-  dialog.warning({
-    title: '提示',
-    content: '你确定要退出登录吗？',
-    positiveText: '确定',
-    negativeText: '不确定',
-    onPositiveClick: () => {
-      ['token', 'user'].forEach(item => sessionStorage.removeItem(item))
-      router.replace('/login')
-      message.success('已成功退出登录')
-    },
-    onNegativeClick: () => {}
-  })
-}
+const { LogOut } = useLogin()
 const handleSelect = function(key) {
   if(key === 'HomeOut') router.push('/')
+  if(key === 'UserOut') router.push('/user')
   if(key === 'LogOut') LogOut()
 }
 </script>

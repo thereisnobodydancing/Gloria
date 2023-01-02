@@ -24,12 +24,13 @@
 </template>
 
 <script setup>
+import useUserStore from '/src/store/user.js'
 import OrganizationTab from './tabs/OrganizationTab.vue'
 import SectorTab from './tabs/SectorTab.vue'
 
 const route = useRoute()
 const showPageLoading = ref(true)
-const user = JSON.parse(sessionStorage.getItem('user'))
+const { user } = toRefs(useUserStore())
 let companyNames = ['光大健康集团有限公司', '光大健康在线科技', '光元泰合', '星石天河健康科技有限责任公司']
 
 const defaultTab = ref('organizationTab')
